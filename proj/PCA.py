@@ -41,7 +41,7 @@ class MyPCA(object):
 
 
 if __name__ == '__main__':
-    data_dir = "./aligned/"
+    data_dir = "../aligned/"
     dataset, cnt = load_data(data_dir)
     # test with happiness and anger
     images = balanced_sampler(dataset, cnt, emotions=['happiness'])['happiness']

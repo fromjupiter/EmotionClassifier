@@ -8,7 +8,7 @@ class SoftmaxRegression(object):
     #
     # denote sample number as n, data dimension as m, label number as k
     #
-    def __init__(self, lr=0.01, iter_times=1000):
+    def __init__(self, lr=0.01, iter_times=100):
         self.iter_times = iter_times
 
         self.rate = lr
@@ -27,27 +27,29 @@ class SoftmaxRegression(object):
             return  self.enc_.transform(y).todense()
         return y
 
-    # cross entropy, y is string array, t is one-hot-encoded y
+    # average cross entropy, y is string array
     def _loss(self, X, y):
         y = self._encode_y(y)
         pred = self.predict_proba(X)
-        return np.sum(np.multiply(y, np.log(pred)))
+        return -np.sum(np.multiply(y, np.log(pred)))/len(X)
 
     # t: encoded labels
     def fit_one_epoch(self, X, y, use_batch=True):
         y = self._encode_y(y)
+        if self.coef_ is None:
+            self.coef_ = np.zeros((X.shape[1], len(self.classes_)))
         pred = self.predict_proba(X)
         if use_batch:
             # gd
-            grad_neg = X.T.dot(pred - y)/len(X)
-            self.coef_ += self.rate * grad_neg
+            grad = X.T.dot(pred - y)
+            self.coef_ -= self.rate * grad
         else:
             # sgd
             pass
 
     def fit(self, X, y):
-        y = self._encode_y(y)
-        self.coef_ = np.zeros((X.shape[1], len(self.classes_)))
+        # y = self._encode_y(y)
+        # self.coef_ = np.zeros((X.shape[1], len(self.classes_)))
 
         i = 0
         while i < self.iter_times:

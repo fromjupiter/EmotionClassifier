@@ -1,6 +1,7 @@
 from sklearn.preprocessing import OneHotEncoder
 from dataloader import load_data, balanced_sampler
 import numpy as np
+import random
 from numpy import matlib
 
 
@@ -38,19 +39,21 @@ class SoftmaxRegression(object):
         y = self._encode_y(y)
         if self.coef_ is None:
             self.coef_ = np.zeros((X.shape[1], len(self.classes_)))
-        pred = self.predict_proba(X)
         if use_batch:
             # gd
-            grad = X.T.dot(pred - y)
+            delta = self.predict_proba(X) - y
+            grad = X.T.dot(delta)
             self.coef_ -= self.rate * grad
         else:
             # sgd
-            pass
+            indices = list(range(0, len(X)))
+            random.shuffle(indices)
+            for i in indices:
+                delta = self.predict_proba(X[i]) - y[i]
+                grad = X[i].T.dot(delta)
+                self.coef_ -= self.rate * grad
 
     def fit(self, X, y):
-        # y = self._encode_y(y)
-        # self.coef_ = np.zeros((X.shape[1], len(self.classes_)))
-
         i = 0
         while i < self.iter_times:
             self.fit_one_epoch(X, y)

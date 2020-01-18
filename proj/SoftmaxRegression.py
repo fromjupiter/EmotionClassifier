@@ -29,7 +29,6 @@ class SoftmaxRegression(object):
             self.weights_ = np.array(len(y) / len(self.classes_) / y.sum(axis=0)).flatten()
         return y
         
-        
     def _encode_y(self, y):
         if type(y)==np.ndarray or type(y)==list:
             y = np.array(y).reshape(-1,1)
@@ -54,6 +53,8 @@ class SoftmaxRegression(object):
             # gd
             delta = self.predict_proba(X) - y
             grad = X.T.dot(delta) / len(X)
+            if self.class_weight == 'balanced':
+                grad = np.multiply(grad, self.weights_)
             self.coef_ -= self.rate * grad
         else:
             # sgd
@@ -62,6 +63,8 @@ class SoftmaxRegression(object):
             for i in indices:
                 delta = self.predict_proba(X[i]) - y[i]
                 grad = X[i].T.dot(delta)
+                if self.class_weight == 'balanced':
+                    grad = np.multiply(grad, self.weights_)
                 self.coef_ -= self.rate * grad
 
     def fit(self, X, y):

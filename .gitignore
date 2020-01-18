@@ -2,6 +2,7 @@ aligned/*
 resized/*
 
 # Python Tools for Visual Studio (PTVS)
+.DS_*
 __pycache__/
 *.pyc
 *.pdf

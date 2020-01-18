@@ -103,3 +103,4 @@ if __name__ == '__main__':
 	display_index = 0
 	display_face(images['anger'][display_index])
 	print(images['anger'][display_index].shape)
+	print(images['anger'][display_index])

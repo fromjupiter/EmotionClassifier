@@ -2,11 +2,12 @@ import argparse
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+from PIL import Image
 
 from PCA import MyPCA
 from SoftmaxRegression import SoftmaxRegression
 from kfold import MyKFold
-from dataloader import load_data, balanced_sampler
+from dataloader import load_data, balanced_sampler, display_face
 
 parser = argparse.ArgumentParser(description='Singer Match Entry Point')
 
@@ -126,12 +127,36 @@ def visualizeWeights():
     test_accuracy = 0
     test_loss = 0
     
-    classifier = SoftmaxRegression(lr=LEARNING_RATE)
+    model = SoftmaxRegression(lr=LEARNING_RATE)
+    emotions = []
+    i = 0
     for d_train, d_valid, d_test in kfold.split_dict(images):
-        result = trainModel(classifier, d_train, d_valid, d_test, epoch=EPOCH, n_components=N_COMPONENTS)
-        break
-    print("test loss: {}, test accuracy: {}.".format(result.test_loss, result.test_accuracy))
+        i+=1
+        if i!=9:continue
+        X_train, y_train = d_train
+        pca = MyPCA(n_components=N_COMPONENTS)
+        pca.fit(X_train)
+        result = trainModel(model, d_train, d_valid, d_test, epoch=EPOCH, n_components=N_COMPONENTS)
     
+    print("test loss: {}, test accuracy: {}.".format(result.test_loss, result.test_accuracy))
+    # leave out bias term
+    emotion_matrix = pca.components_.dot(model.coef_[1:,]).T
+
+    # linear scale
+    emotion_matrix -= emotion_matrix.min(axis=1)
+    emotion_matrix = np.multiply(emotion_matrix, 255/emotion_matrix.max(axis=1))
+    emotion_matrix = emotion_matrix.astype(int)
+    emotions = {}
+    for i, label in enumerate(model.classes_):
+        emotions[label] = np.array(emotion_matrix[i].reshape(224, 192))
+    
+    fig, axs = plt.subplots(2, 3)
+    for ax, label in zip(axs.ravel(), emotions.keys()):
+        ax.set_title(label)
+        ax.set_axis_off()
+        ax.imshow(emotions[label])
+    print("hell!")
+    plt.show()
 
 
 ############################

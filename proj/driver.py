@@ -27,15 +27,30 @@ class TrainResult(object):
         self.test_loss = None
         self.test_accuracy = None
 
-# return average and std of train/validation loss
-def mergeResults(res_list):
-    if res_list is None or len(res_list)==0: return None
+class AggregateResult(object):
+    def __init__(self):
+        self.train_loss_avg = None
+        self.train_loss_std = None
+        self.valid_loss_avg = None
+        self.valid_loss_std = None
+        self.train_accuracy_avg = None
+        self.train_accuracy_std = None
+        self.valid_accuracy_avg = None
+        self.valid_accuracy_std = None
 
-    train_avg = np.average(list(map(lambda x:x.train_losses, res_list)), axis=0)
-    train_std = np.std(list(map(lambda x:x.valid_losses, res_list)), axis=0)
-    valid_avg = np.average(list(map(lambda x:x.valid_losses, res_list)), axis=0)
-    valid_std = np.std(list(map(lambda x:x.valid_losses, res_list)), axis=0)
-    return (train_avg, train_std, valid_avg, valid_std)
+    def aggregate(res_list):
+        if res_list is None or len(res_list)==0: return AggregateResult()
+        res = AggregateResult()
+        res.train_loss_avg = np.average(list(map(lambda x:x.train_losses, res_list)), axis=0)
+        res.train_loss_std = np.std(list(map(lambda x:x.train_losses, res_list)), axis=0)
+        res.valid_loss_avg = np.average(list(map(lambda x:x.valid_losses, res_list)), axis=0)
+        res.valid_loss_std = np.std(list(map(lambda x:x.valid_losses, res_list)), axis=0)
+
+        res.train_accuracy_avg = np.average(list(map(lambda x:x.train_accuracies, res_list)), axis=0)
+        res.train_accuracy_std = np.std(list(map(lambda x:x.train_accuracies, res_list)), axis=0)
+        res.valid_accuracy_avg = np.average(list(map(lambda x:x.valid_accuracies, res_list)), axis=0)
+        res.valid_accuracy_std = np.std(list(map(lambda x:x.valid_accuracies, res_list)), axis=0)
+        return res
 
 # return TrainResult
 def trainModel(model, d_train, d_valid, d_test, epoch=100, n_components=None, useBatch=True):
@@ -57,6 +72,13 @@ def trainModel(model, d_train, d_valid, d_test, epoch=100, n_components=None, us
     res = TrainResult()
 
     best_loss = float('inf')
+    
+    # add init status
+    model.setup(X_train, y_train)
+    res.train_losses.append(model._loss(X_train, y_train))
+    res.valid_losses.append(model._loss(X_valid, y_valid))
+    res.train_accuracies.append(sum(model.predict(X_train)==y_train)/len(y_train))
+    res.valid_accuracies.append(sum(model.predict(X_valid)==y_valid)/len(y_valid))
     for i in range(epoch):
         model.fit_one_epoch(X_train, y_train, useBatch)
         valid_loss = model._loss(X_valid, y_valid)
@@ -83,26 +105,7 @@ def trainModel(model, d_train, d_valid, d_test, epoch=100, n_components=None, us
 #############################
 
 def test():
-    # hyper parameters
-    N_COMPONENTS = 40
-    N_SPLITS = 10
-    LEARNING_RATE = 0.01
-
-    kfold = MyKFold(n_splits=N_SPLITS)
-
-    i=-1
-    for d_train, d_valid, d_test in kfold.split_dict(images):
-        i+=1
-        # test only 9th split
-        if i!=9: 
-            continue
-        
-        classifier = SoftmaxRegression(lr=LEARNING_RATE)
-        result = trainModel(classifier, d_train, d_valid, d_test, epoch=50, n_components=5)
-        print(result.test_loss)
-        print(result.test_accuracy)
-        print(result.train_losses)
-        print(result.valid_losses)
+    pass
 
 
 
@@ -136,39 +139,78 @@ def visualizeWeights():
 # Report Softmax Regression Training process
 #
 ############################
-def reportSoftmax():
-    EPOCH = 51
-    train_avg, train_std, valid_avg, valid_std = doSoftmax(EPOCH, useBatch=True)
-    train_avg_sgd, train_std_sgd, valid_avg_sgd, valid_std_sgd = doSoftmax(EPOCH, useBatch=False)
-    
-    xlabels = [x for x in range(0,EPOCH)] # np.array([1] + [x for x in range(10, EPOCH+1, 10)])
-    fig, axs = plt.subplots()
-    axs.set_title('Softmax Regression Training Process')
-    axs.set_ylabel('Error(Average Cross-Entropy)')
-    axs.set_xlabel('GD epoch')
-    axs.errorbar(xlabels,train_avg,train_std, errorevery=10, label='gd training loss')
-    axs.errorbar(xlabels,valid_avg,valid_std, errorevery=10, label='gd holdout loss')
-    axs.errorbar(xlabels,train_avg_sgd,valid_std_sgd, errorevery=10, label='sgd training loss')
-    axs.errorbar(xlabels,valid_avg_sgd,valid_std_sgd, errorevery=10, label='sgd holdout loss')
-    axs.legend()
-    axs.legend()
-    plt.show()
-    # fig, axs = plt.subplots(nrows=1, ncols=2, sharex=True, sharey=True)
-    # fig.suptitle('Softmax Regression Training Process')
-    # axs[0].set_ylabel('Error(Average Cross-Entropy)')
-    # axs[0].set_xlabel('GD epoch')
-    # axs[0].set_title('GD')
-    # axs[0].errorbar(xlabels,train_avg,train_std, errorevery=10, label='training loss')
-    # axs[0].errorbar(xlabels,valid_avg,valid_std, errorevery=10, label='holdout loss')
-    # axs[1].set_title('SGD')
-    # axs[1].errorbar(xlabels,train_avg_sgd,valid_std_sgd, errorevery=10, label='training loss')
-    # axs[1].errorbar(xlabels,valid_avg_sgd,valid_std_sgd, errorevery=10, label='holdout loss')
-    # axs[0].legend()
-    # axs[1].legend()
+def softmaxSGD():
+    EPOCH = 50
+    LEARNING_RATE = 0.1
+    gd_res = doSoftmax(EPOCH, LEARNING_RATE, useBatch=True)
+    sgd_res = doSoftmax(EPOCH, LEARNING_RATE, useBatch=False)
+    xlabels = [x for x in range(0,EPOCH+1)]
+    fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)
+    fig.suptitle('Softmax Regression GD vs SGD')
+    axs[0].set_title('Cross-Entropy Loss')
+    axs[1].set_title('Accuracy(Percent Correct)')
+    axs[1].set_xlabel('Epoch')
+
+    axs[0].errorbar(xlabels,gd_res.train_loss_avg,gd_res.train_loss_std, errorevery=10, label='GD')
+    axs[0].errorbar(xlabels,sgd_res.train_loss_avg,sgd_res.train_loss_std, errorevery=10, label='SGD')
+    axs[1].errorbar(xlabels,gd_res.train_accuracy_avg,gd_res.train_accuracy_std, errorevery=10, label='GD')
+    axs[1].errorbar(xlabels,sgd_res.train_accuracy_avg,sgd_res.train_accuracy_std, errorevery=10, label='SGD')
+    axs[0].legend()
+    axs[1].legend()
     plt.show()
 
-def doSoftmax(epoch=100, useBatch=True):
+def reportSoftmax():
+    EPOCH = 100
+    LEARNING_RATE = 0.5
+    result = doSoftmax(EPOCH, LEARNING_RATE, useBatch=True)
+    
+    xlabels = [x for x in range(0,EPOCH+1)]
+    fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)
+    fig.suptitle('Softmax Regression GD Process')
+    axs[0].set_title('Cross-Entropy Loss')
+    axs[1].set_title('Accuracy(Percent Correct)')
+    axs[1].set_xlabel('Epoch')
+
+    axs[0].errorbar(xlabels,result.train_loss_avg,result.train_loss_std, errorevery=10, label='train set')
+    axs[0].errorbar(xlabels,result.valid_loss_avg,result.valid_loss_std, errorevery=10, label='holdout set')
+    axs[1].errorbar(xlabels,result.train_accuracy_avg,result.train_accuracy_std, errorevery=10, label='train set')
+    axs[1].errorbar(xlabels,result.valid_accuracy_avg,result.valid_accuracy_std, errorevery=10, label='holdout set')
+    axs[0].legend()
+    axs[1].legend()
+    plt.show()
+
+def doSoftmax(epoch=100, lr=0.1, useBatch=True):
     # hyper parameters
+    N_COMPONENTS = 50
+    N_SPLITS = 10
+
+    kfold = MyKFold(n_splits=N_SPLITS)
+    results = []
+    test_accuracy = 0
+    test_loss = 0
+    for d_train, d_valid, d_test in kfold.split_dict(images):
+        classifier = SoftmaxRegression(lr=lr)
+        result = trainModel(classifier, d_train, d_valid, d_test, epoch=epoch, n_components=N_COMPONENTS, useBatch=useBatch)
+        test_loss += result.test_loss
+        test_accuracy += result.test_accuracy
+        results.append(result)
+
+    test_accuracy /= N_SPLITS
+    test_loss /= N_SPLITS
+    print("useBatch={}, test loss: {}, test accuracy: {}.".format(useBatch, test_loss, test_accuracy))
+    return AggregateResult.aggregate(results)
+
+
+############################
+#
+# Report balanced Softmax Regression on imbalanced dataset
+#
+############################
+
+def reportBalancedSoftmax():
+    images, cnt = load_data(data_dir)
+    # hyper parameters
+    EPOCH = 50
     N_COMPONENTS = 50
     N_SPLITS = 10
     LEARNING_RATE = 0.01
@@ -179,15 +221,16 @@ def doSoftmax(epoch=100, useBatch=True):
     test_loss = 0
     for d_train, d_valid, d_test in kfold.split_dict(images):
         classifier = SoftmaxRegression(lr=LEARNING_RATE)
-        result = trainModel(classifier, d_train, d_valid, d_test, epoch=epoch, n_components=N_COMPONENTS, useBatch=useBatch)
+        result = trainModel(classifier, d_train, d_valid, d_test, epoch=EPOCH, n_components=N_COMPONENTS)
         test_loss += result.test_loss
         test_accuracy += result.test_accuracy
         results.append(result)
 
     test_accuracy /= N_SPLITS
-    test_loss /= N_SPLITS
-    print("useBatch={}, test loss: {}, test accuracy: {}.".format(useBatch, test_loss, test_accuracy))
-    return mergeResults(results)
+    test_loss /= N_SPLITS 
+    print("test loss: {}, test accuracy: {}.".format(test_loss, test_accuracy))
+    print(classifier.classes_)
+    print(classifier.weights_)
 
 
 ############################

@@ -9,15 +9,27 @@ class SoftmaxRegression(object):
     #
     # denote sample number as n, data dimension as m, label number as k
     #
-    def __init__(self, lr=0.01, iter_times=100):
+    def __init__(self, lr=0.01, iter_times=100, class_weight=None):
         self.iter_times = iter_times
 
         self.rate = lr
         # m*k
         self.coef_ = None
         self.enc_ = None
+        self.class_weight = class_weight
         self.classes_ = None
-
+        self.weights_ = None
+    
+    def setup(self, X, y):
+        y = self._encode_y(y)
+        if self.coef_ is None:
+            self.coef_ = np.zeros((X.shape[1], len(self.classes_)))
+        if self.weights_ is None:
+            # always do balanced weight for now
+            self.weights_ = np.array(len(y) / len(self.classes_) / y.sum(axis=0)).flatten()
+        return y
+        
+        
     def _encode_y(self, y):
         if type(y)==np.ndarray or type(y)==list:
             y = np.array(y).reshape(-1,1)
@@ -32,17 +44,16 @@ class SoftmaxRegression(object):
     def _loss(self, X, y):
         y = self._encode_y(y)
         pred = self.predict_proba(X)
-        return -np.sum(np.multiply(y, np.log(pred)))/len(X)
+        # return -np.sum(np.multiply(y, np.log(pred)))/len(X)
+        return -np.sum(np.multiply(y, np.log(pred)).dot(self.weights_))/len(X)
 
     # t: encoded labels
     def fit_one_epoch(self, X, y, use_batch=True):
-        y = self._encode_y(y)
-        if self.coef_ is None:
-            self.coef_ = np.zeros((X.shape[1], len(self.classes_)))
+        y = self.setup(X, y)
         if use_batch:
             # gd
             delta = self.predict_proba(X) - y
-            grad = X.T.dot(delta)
+            grad = X.T.dot(delta) / len(X)
             self.coef_ -= self.rate * grad
         else:
             # sgd

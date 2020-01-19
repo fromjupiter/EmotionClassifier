@@ -361,32 +361,13 @@ def reportPCA():
     print("PCA Result (reported loss/accuracy on test set):")
     print(df)
 
-def doLogistic(images, epoch=100, lr=0.1, useBatch=True,n_splits=10):
-    # hyper parameters
-    N_COMPONENTS = 50
+############################
+#
+# Report Logistic
+#
+############################
 
-    kfold = MyKFold(n_splits)
-    results = []
-    test_accuracy = 0
-    test_loss = 0
-    i = 0
-    for d_train, d_valid, d_test in kfold.split_dict(images):
-        classifier = LogisticRegression(lr=lr)
-        result = trainModel(classifier, d_train, d_valid, d_test, epoch=epoch, n_components=N_COMPONENTS, useBatch=useBatch)
-        test_loss += result.test_loss
-        test_accuracy += result.test_accuracy
-        results.append(result)
-
-    test_accuracy /= n_splits
-    test_loss /= n_splits
-    print("useBatch={}, test loss: {}, test accuracy: {}.".format(useBatch, test_loss, test_accuracy))
-    return AggregateResult.aggregate(results),results
-
-def reportresized():
-
-    data_dir = './resized'
-    dataset, cnt = load_data(data_dir)
-    images = balanced_sampler(dataset, cnt, emotions=emotions)
+def reportLogisticOneRun():
     # hyper parameters
     EPOCH = 50
     N_COMPONENTS = 30
@@ -409,11 +390,7 @@ def reportresized():
     plt.legend(["train loss","valid loss"])
     plt.show()
 
-def reportaligned():
-
-    data_dir = './aligned'
-    dataset, cnt = load_data(data_dir)
-    images = balanced_sampler(dataset, cnt, emotions=emotions)
+def reportLogistic():
     # hyper parameters
     EPOCH = 50
     N_COMPONENTS = 50

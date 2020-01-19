@@ -1,0 +1,84 @@
+\documentclass{article} % For LaTeX2e
+\usepackage{nips15submit_e,times}
+\usepackage{hyperref}
+\usepackage{url}
+%\documentstyle[nips14submit_09,times,art10]{article} % For LaTeX 2.09
+
+
+\title{Face Emotion Classification Using Single-Layer Neural Networks}
+
+
+\author{
+Kexiang Feng \\
+Department of Computer Science and Engineering\\
+University of California, San Diego\\
+\texttt{fkxcole@gmail.com} \\
+\And
+Xupeng Yu \\
+Department of Electrical and Computer Engineering \\
+University of California, San Diego \\
+\texttt{maiyuxiaoge@gmail.com}
+}
+
+% The \author macro works with any number of authors. There are two commands
+% used to separate the names and addresses of multiple authors: \And and \AND.
+%
+% Using \And between authors leaves it to \LaTeX{} to determine where to break
+% the lines. Using \AND forces a linebreak at that point. So, if \LaTeX{}
+% puts 3 of 4 authors names on the first line, and the last on the second
+% line, try using \AND instead of \And before the third author name.
+
+\newcommand{\fix}{\marginpar{FIX}}
+\newcommand{\new}{\marginpar{NEW}}
+
+\nipsfinalcopy % Uncomment for camera-ready version
+
+\begin{document}
+
+
+\maketitle
+
+\begin{abstract}
+This paper summarizes steps to build a face emotion neural network without using any machine learning libraries(Sklearn, Pytorch, etc.). We start with a logistic regression layer to solve binary classification problem, then we use a softmax layer to deal with more general multi-label classification. All models are evaluated on the CK+ dataset using 10-fold cross validation. Our logistic regressor achieves an average accuracy of $ 100\% $ in Happy vs Angry classification and our softmax regressor achieves an average accuracy of 78\% in 6-way classification.
+\end{abstract}
+
+\section{Introduction}
+In what section we describe what problems to get the scores on what part of the assignment.
+
+In section 2 we briefly introduce our data preprocessing and data split, namely Principal Component Analysis and K-Fold. Section 3 and 4 each elaborates our work in the logistic regressor and softmax regressor. Following that we share our findings in Section 5. Lastly we briefly introduce individual contributions in section 6.
+
+\section{Dataset and Task Description}
+
+what is CK+? what is aligned vs resized? What preprocess (PCA) do we need?
+DATA\_SAMPLER
+
+\subsection {Principal Component Analysis}
+\subsection {K-Fold Cross Validation}
+
+
+\section{LOGISTIC REGRESSION}
+Basic ideas of LR. 
+\subsection {Evaluation on Happiness vs Anger using the resized dataset}
+\subsection {Evaluation on Happiness vs Anger using the aligned dataset}
+\subsection {Evaluation on Fear vs Surprise using the aligned dataset}
+
+
+\section{SOFTMAX REGRESSION}
+Basic idea of softmax regression
+\subsection {Weight Visualization}
+\subsection {Evaluation}
+\subsection {Batch vs Stochastic Gradient Descent}
+\subsection {Class weights to handle imbalanced dataset}
+
+\section {CONCLUSION}
+\section{INDIVIDUAL CONTRIBUTIONS}
+Our group consists of two members: \textit{Kexiang Feng} and \textit{Xupeng Yu}. \\
+\textit{Kexiang Feng} builds the PCA, K-Fold modules and Softmax regressor. He also wrote the scripts to visualize the softmax weights and PCA components. \\
+\textit{Xupeng Yu} builds the Logistic regressor. 
+
+\section {References}
+\small{
+[1]
+}
+
+\end{document}

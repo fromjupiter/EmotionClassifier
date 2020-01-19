@@ -2,7 +2,9 @@ import argparse
 import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
+import matplotlib.ticker as ticker
 from PIL import Image
+from collections import defaultdict
 
 from PCA import MyPCA
 from SoftmaxRegression import SoftmaxRegression
@@ -27,6 +29,9 @@ class TrainResult(object):
         self.valid_accuracies = []
         self.test_loss = None
         self.test_accuracy = None
+        # for confusion matrix
+        self.predictions = []
+        self.truths = []
 
 class AggregateResult(object):
     def __init__(self):
@@ -38,6 +43,8 @@ class AggregateResult(object):
         self.train_accuracy_std = None
         self.valid_accuracy_avg = None
         self.valid_accuracy_std = None
+        self.predictions = []
+        self.truths = []
 
     def aggregate(res_list):
         if res_list is None or len(res_list)==0: return AggregateResult()
@@ -51,6 +58,11 @@ class AggregateResult(object):
         res.train_accuracy_std = np.std(list(map(lambda x:x.train_accuracies, res_list)), axis=0)
         res.valid_accuracy_avg = np.average(list(map(lambda x:x.valid_accuracies, res_list)), axis=0)
         res.valid_accuracy_std = np.std(list(map(lambda x:x.valid_accuracies, res_list)), axis=0)
+        
+        for x in res_list:
+            res.predictions.extend(x.predictions)
+            res.truths.extend(x.truths)
+        
         return res
 
 # return TrainResult
@@ -99,6 +111,8 @@ def trainModel(model, d_train, d_valid, d_test, epoch=100, n_components=None, us
     res.valid_losses = np.array(res.valid_losses)
     
     model.coef_ = res.best_coef
+    res.truths.extend(y_test)
+    res.predictions.extend(model.predict(X_test))
     return res
 
 #############################
@@ -193,6 +207,27 @@ def visualizeWeights():
 # Report Softmax Regression Training process
 #
 ############################
+def softmaxConfusion():
+    EPOCH = 50
+    LEARNING_RATE = 0.1
+    res = doRegression(images, 'softmax', EPOCH, LEARNING_RATE, useBatch=True)
+    pred = res.predictions
+    truth = res.truths
+    dic = defaultdict(lambda:len(dic))
+    for x in pred:
+        dic[x]
+    matrix = np.zeros((len(dic), len(dic)))
+    for r, c in zip(pred, truth):
+        matrix[dic[r]][dic[c]] += 1
+    labels = [''] + list(map(lambda x:x[0], sorted(list(dic.items()),key=lambda x:x[1])))
+    fig, ax = plt.subplots() 
+    img = ax.matshow(matrix)
+    ax.set_xticklabels(labels)        
+    ax.set_yticklabels(labels)      
+    ax.title.set_text("Softmax 10-fold Confusion Matrix")
+    fig.colorbar(img, ax=ax, orientation='vertical', fraction=.1)    
+    plt.show()
+
 def softmaxSGD():
     EPOCH = 50
     LEARNING_RATE = 0.1

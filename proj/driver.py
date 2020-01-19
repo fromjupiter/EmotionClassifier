@@ -6,6 +6,7 @@ from PIL import Image
 
 from PCA import MyPCA
 from SoftmaxRegression import SoftmaxRegression
+from LogisticRegression import LogisticRegression
 from kfold import MyKFold
 from dataloader import load_data, balanced_sampler, display_face
 
@@ -246,7 +247,7 @@ def doRegression(images, reg_type, epoch=100, lr=0.1, useBatch=True, class_weigh
         if reg_type=='softmax':
             classifier = SoftmaxRegression(lr=lr, class_weight=class_weight)
         elif reg_type=='logistic':
-            classifier = SoftmaxRegression(lr=lr)
+            classifier = LogisticRegression(lr=lr)
         result = trainModel(classifier, d_train, d_valid, d_test, epoch=epoch, n_components=N_COMPONENTS, useBatch=useBatch)
         test_loss += result.test_loss
         test_accuracy += result.test_accuracy
@@ -324,6 +325,91 @@ def reportPCA():
         df.loc[i] = (n, accuracy, loss)
     print("PCA Result (reported loss/accuracy on test set):")
     print(df)
+
+def doLogistic(images, epoch=100, lr=0.1, useBatch=True,n_splits=10):
+    # hyper parameters
+    N_COMPONENTS = 50
+
+    kfold = MyKFold(n_splits)
+    results = []
+    test_accuracy = 0
+    test_loss = 0
+    i = 0
+    for d_train, d_valid, d_test in kfold.split_dict(images):
+        classifier = LogisticRegression(lr=lr)
+        result = trainModel(classifier, d_train, d_valid, d_test, epoch=epoch, n_components=N_COMPONENTS, useBatch=useBatch)
+        test_loss += result.test_loss
+        test_accuracy += result.test_accuracy
+        results.append(result)
+
+    test_accuracy /= n_splits
+    test_loss /= n_splits
+    print("useBatch={}, test loss: {}, test accuracy: {}.".format(useBatch, test_loss, test_accuracy))
+    return AggregateResult.aggregate(results),results
+
+def reportresized():
+
+    data_dir = './resized'
+    dataset, cnt = load_data(data_dir)
+    images = balanced_sampler(dataset, cnt, emotions=emotions)
+    # hyper parameters
+    EPOCH = 50
+    N_COMPONENTS = 30
+    N_SPLITS = 10
+    LEARNING_RATE = 0.1
+    i = 0
+    kfold = MyKFold(N_SPLITS)
+    for d_train, d_valid, d_test in kfold.split_dict(images):
+        i += 1
+        if i != 5: continue
+        classifier = LogisticRegression(lr=LEARNING_RATE)
+        result = trainModel(classifier, d_train, d_valid, d_test, epoch=EPOCH, n_components=N_COMPONENTS, useBatch=True)
+    xlabels = [x for x in range(0,EPOCH+1)]
+    plt.figure(1)
+    plt.plot(xlabels,result.train_losses,color = 'b')
+    plt.plot(xlabels,result.valid_losses,color = 'g')
+    plt.title('resized image train loss & valid loss vs epoch')
+    plt.xlabel('epoch')
+    plt.ylabel('Cross-Entropy Loss')
+    plt.legend(["train loss","valid loss"])
+    plt.show()
+
+def reportaligned():
+
+    data_dir = './aligned'
+    dataset, cnt = load_data(data_dir)
+    images = balanced_sampler(dataset, cnt, emotions=emotions)
+    # hyper parameters
+    EPOCH = 50
+    N_COMPONENTS = 50
+    N_SPLITS = 10
+    LEARNING_RATE = [0.01,0.1,50]
+    balanced_results = []
+    resultsets = []
+    for learningrate in LEARNING_RATE:
+        balanced_result = doRegression(images,'logistic', epoch=50, lr=learningrate, useBatch=True, class_weight = None)
+        balanced_results.append(balanced_result)
+        
+    xlabels = [x for x in range(0,EPOCH+1)]
+    plt.figure(1)
+    plt.title('Train_loss vs valid_loss')
+    plt.title('Cross-Entropy Loss')
+    plt.xlabel('Epoch')
+    plt.plot(xlabels,balanced_results[1].train_loss_avg,color = 'b')
+    plt.plot(xlabels,balanced_results[1].valid_loss_avg,color = 'g')
+    plt.title('aligned image train loss & valid loss vs epoch')
+    plt.xlabel('epoch')
+    plt.ylabel('Cross-Entropy Loss')
+    plt.legend(["train loss","valid loss"])
+    plt.figure(2)
+    plt.title('Train_loss vs learning rate')
+    plt.title('Train Loss')
+    plt.xlabel('Epoch')
+    plt.errorbar(xlabels,balanced_results[0].train_loss_avg,balanced_results[0].train_loss_std, errorevery=10, label='train loss when lr=0.01')
+    plt.errorbar(xlabels,balanced_results[1].train_loss_avg,balanced_results[1].train_loss_std, errorevery=10, label='train loss when lr=0.1')
+    plt.errorbar(xlabels,balanced_results[2].train_loss_avg,balanced_results[2].train_loss_std, errorevery=10, label='train loss when lr=50')
+    plt.legend(['lr = 0.001','lr= 0.1','lr = 50'])
+    plt.show()
 
 
 dataset, cnt = load_data(data_dir)

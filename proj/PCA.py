@@ -15,6 +15,9 @@ class MyPCA(object):
     
     # X is M*N matrix, M is sample number, N is data dimension
     def fit(self, X): 
+        if len(self.components_) > math.max(X.shape):
+            print("ERROR: PCA components should be less than data dimension! {} - {}".format(self.n_components, X.shape)) 
+            raise ValueError
         # A: N*M
         self.n_samples = len(X)
         self.mean_ = X.mean(axis=0)

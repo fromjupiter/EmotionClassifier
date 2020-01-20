@@ -231,8 +231,8 @@ def softmaxConfusion():
 def softmaxSGD():
     EPOCH = 50
     LEARNING_RATE = 0.1
-    gd_res = doRegression(images, 'softmax', EPOCH, LEARNING_RATE, useBatch=True)
-    sgd_res = doRegression(images, 'softmax', EPOCH, LEARNING_RATE, useBatch=False)
+    gd_res = doRegression(images, 'softmax', n_components=50, EPOCH, LEARNING_RATE, useBatch=True)
+    sgd_res = doRegression(images, 'softmax', n_components=50, EPOCH, LEARNING_RATE, useBatch=False)
     xlabels = [x for x in range(0,EPOCH+1)]
     fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)
     fig.suptitle('Softmax Regression GD vs SGD')
@@ -251,7 +251,7 @@ def softmaxSGD():
 def reportSoftmax():
     EPOCH = 100
     LEARNING_RATE = 0.5
-    result = doRegression(images, 'softmax', EPOCH, LEARNING_RATE, useBatch=True)
+    result = doRegression(images, 'softmax', n_components=50, EPOCH, LEARNING_RATE, useBatch=True)
     
     xlabels = [x for x in range(0,EPOCH+1)]
     fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)
@@ -268,9 +268,8 @@ def reportSoftmax():
     axs[1].legend()
     plt.show()
 
-def doRegression(images, reg_type, epoch=100, lr=0.1, useBatch=True, class_weight = None):
+def doRegression(images, reg_type, n_components = 50, epoch=100, lr=0.1, useBatch=True, class_weight = None):
     # hyper parameters
-    N_COMPONENTS = 50
     N_SPLITS = 10
 
     kfold = MyKFold(n_splits=N_SPLITS)
@@ -282,7 +281,7 @@ def doRegression(images, reg_type, epoch=100, lr=0.1, useBatch=True, class_weigh
             classifier = SoftmaxRegression(lr=lr, class_weight=class_weight)
         elif reg_type=='logistic':
             classifier = LogisticRegression(lr=lr)
-        result = trainModel(classifier, d_train, d_valid, d_test, epoch=epoch, n_components=N_COMPONENTS, useBatch=useBatch)
+        result = trainModel(classifier, d_train, d_valid, d_test, epoch=epoch, n_components=n_components, useBatch=useBatch)
         test_loss += result.test_loss
         test_accuracy += result.test_accuracy
         results.append(result)
@@ -307,9 +306,9 @@ def reportBalancedSoftmax():
     N_SPLITS = 10
     LEARNING_RATE = 0.1
     print("----training balanced model------")
-    balanced_result = doRegression(images, "softmax", EPOCH, LEARNING_RATE, class_weight='balanced')
+    balanced_result = doRegression(images, "softmax", n_components=50, EPOCH, LEARNING_RATE, class_weight='balanced')
     print("----training regular model------")
-    reg_result = doRegression(images, 'softmax', EPOCH, LEARNING_RATE)
+    reg_result = doRegression(images, 'softmax', n_components=50, EPOCH, LEARNING_RATE)
     
     xlabels = [x for x in range(0,EPOCH+1)]
     fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)
@@ -392,13 +391,13 @@ def reportLogisticOneRun():
 def reportLogistic():
     # hyper parameters
     EPOCH = 50
-    N_COMPONENTS = 50
+    N_COMPONENTS = 20
     N_SPLITS = 10
     LEARNING_RATE = [0.01,0.1,50]
     balanced_results = []
     resultsets = []
     for learningrate in LEARNING_RATE:
-        balanced_result = doRegression(images,'logistic', epoch=50, lr=learningrate, useBatch=True, class_weight = None)
+        balanced_result = doRegression(images,'logistic', n_components=N_COMPONENTS, epoch=50, lr=learningrate, useBatch=True, class_weight = None)
         balanced_results.append(balanced_result)
         
     xlabels = [x for x in range(0,EPOCH+1)]

@@ -76,8 +76,7 @@ def trainModel(model, d_train, d_valid, d_test, epoch=100, n_components=None, us
         pca.fit(X_train)
         X_train = pca.transform(X_train)
         X_valid = pca.transform(X_valid)
-        X_test = pca.transform(X_test)
-    
+        X_test = pca.transform(X_test) 
     #add bias term
     X_train = np.concatenate((np.ones((X_train.shape[0],1)) , X_train), axis=1)
     X_valid = np.concatenate((np.ones((X_valid.shape[0],1)) , X_valid), axis=1)
@@ -86,7 +85,7 @@ def trainModel(model, d_train, d_valid, d_test, epoch=100, n_components=None, us
     res = TrainResult()
 
     best_loss = float('inf')
-    
+
     # add init status
     model.setup(X_train, y_train)
     res.train_losses.append(model._loss(X_train, y_train))
@@ -377,7 +376,7 @@ def reportLogisticOneRun():
     kfold = MyKFold(N_SPLITS)
     for d_train, d_valid, d_test in kfold.split_dict(images):
         i += 1
-        if i != 5: continue
+        if i != 7: continue
         classifier = LogisticRegression(lr=LEARNING_RATE)
         result = trainModel(classifier, d_train, d_valid, d_test, epoch=EPOCH, n_components=N_COMPONENTS, useBatch=True)
     xlabels = [x for x in range(0,EPOCH+1)]
@@ -389,13 +388,14 @@ def reportLogisticOneRun():
     plt.ylabel('Cross-Entropy Loss')
     plt.legend(["train loss","valid loss"])
     plt.show()
+    print('test_accuracy is %f' %result.test_accuracy )
 
 def reportLogistic():
     # hyper parameters
     EPOCH = 50
     N_COMPONENTS = 50
     N_SPLITS = 10
-    LEARNING_RATE = [0.01,0.1,50]
+    LEARNING_RATE = [0.01,0.1,5]
     balanced_results = []
     resultsets = []
     for learningrate in LEARNING_RATE:
@@ -415,11 +415,11 @@ def reportLogistic():
     plt.legend(["train loss","valid loss"])
     plt.figure(2)
     plt.title('Train_loss vs learning rate')
-    plt.title('Train Loss')
     plt.xlabel('Epoch')
+    plt.ylabel('Cross-Entropy Loss')
     plt.errorbar(xlabels,balanced_results[0].train_loss_avg,balanced_results[0].train_loss_std, errorevery=10, label='train loss when lr=0.01')
     plt.errorbar(xlabels,balanced_results[1].train_loss_avg,balanced_results[1].train_loss_std, errorevery=10, label='train loss when lr=0.1')
-    plt.errorbar(xlabels,balanced_results[2].train_loss_avg,balanced_results[2].train_loss_std, errorevery=10, label='train loss when lr=50')
+    plt.errorbar(xlabels,balanced_results[2].train_loss_avg,balanced_results[2].train_loss_std, errorevery=10, label='train loss when lr=5')
     plt.legend(['lr = 0.001','lr= 0.1','lr = 50'])
     plt.show()
 

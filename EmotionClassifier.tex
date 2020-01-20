@@ -64,11 +64,19 @@ Basic ideas of LR.
 
 
 \section{SOFTMAX REGRESSION}
-Basic idea of softmax regression
+Softmax is the generalization of logistic regression for multiple classes. Given an input $x^n$, softmax regression will output a vector $y^n$, where each element, $y_k^n$ represents the probability that $x^n$ is in class k.
+\subsection {Model Evaluation}
+We performed an 10-fold cross validation on pictures of six emotions to check our model's performance. In each fold, best model parameters is selected so that holdout dataset reaches lowest loss. Then we use the model parameters to record the accuracy on test dataset. Final model performance is the average recorded accuracy of ten folds. \\
+Below figure shows the training process and the result in confusion matrix form.
 \subsection {Weight Visualization}
-\subsection {Evaluation}
+To show that our model has learned meaningful patterns, we can visualize the model parameters by doing inner product with our PCA components. Below pictures show the result of visualized weights. 
 \subsection {Batch vs Stochastic Gradient Descent}
+In normal batch gradien descent(GD), weights are updated once per epoch. To increase the converging speed over every epoch, stochastic gradient descent(SGD) is introduced.\\
+The figure below compares the converging speed between GD and SGD. We can see that SGD is much faster in terms of minimizing the loss in fewer epochs. The reason is that in each SGD epoch, model parameters are updated N times(N is the training set size) instead of one time.
 \subsection {Class weights to handle imbalanced dataset}
+The above experiments have been performed on a balanced dataset. In order to handle imbalanced dataset, we modify our model by adding class weights. The basic idea is that we want to give a penalty to the major classes and a bonus to the rare classes. Class weights are defined as $c_k = C*N/N_k$ where C is class number, N is sample number and $N_k$ is sample number with class k. \\
+Given this class weight definition, we define weighted cross entropy $E = -\sum_{n}\sum_{k=1}^{C} c_k t_k^n ln y_k^n $ as our loss function. The target of our new model training process is to minimize the weighted cross entropy. \\
+Below figure compares the modified model with the original model using the whole CK+ dataset.
 
 \section {CONCLUSION}
 \section{INDIVIDUAL CONTRIBUTIONS}

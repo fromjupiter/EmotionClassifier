@@ -199,7 +199,6 @@ def visualizeWeights():
         ax.set_title(label)
         ax.set_axis_off()
         ax.imshow(emotions[label])
-    print("hell!")
     plt.show()
 
 

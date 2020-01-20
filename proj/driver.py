@@ -48,6 +48,10 @@ class AggregateResult(object):
         self.train_accuracy_std = None
         self.valid_accuracy_avg = None
         self.valid_accuracy_std = None
+        self.test_accuracy_avg = None
+        self.test_accuracy_std = None
+        self.test_loss_avg = None
+        self.test_loss_std = None
         self.predictions = []
         self.truths = []
 
@@ -69,6 +73,12 @@ class AggregateResult(object):
         res.valid_ber_avg = np.average(list(map(lambda x:x.valid_bers, res_list)), axis=0)
         res.valid_ber_std = np.std(list(map(lambda x:x.valid_bers, res_list)), axis=0)
         
+        res.test_accuracy_avg = np.average(list(map(lambda x:x.test_accuracy, res_list)))
+        res.test_accuracy_std = np.std(list(map(lambda x:x.test_accuracy, res_list)))
+        res.test_loss_avg = np.average(list(map(lambda x:x.test_loss, res_list)))
+        res.test_loss_std = np.std(list(map(lambda x:x.test_loss, res_list)))
+        res.test_ber_avg = np.average(list(map(lambda x:x.test_ber, res_list)))
+        res.test_ber_std = np.std(list(map(lambda x:x.test_ber, res_list)))
         for x in res_list:
             res.predictions.extend(x.predictions)
             res.truths.extend(x.truths)
@@ -178,7 +188,7 @@ def visualizeWeights():
     EPOCH = 100
     N_COMPONENTS = 50
     N_SPLITS = 10
-    LEARNING_RATE = 0.01
+    LEARNING_RATE = 0.1
 
     kfold = MyKFold(n_splits=N_SPLITS)
     test_accuracy = 0
@@ -287,25 +297,17 @@ def doRegression(images, reg_type, n_components = 50, epoch=100, lr=0.1, useBatc
 
     kfold = MyKFold(n_splits=N_SPLITS)
     results = []
-    test_accuracy = 0
-    test_loss = 0
-    test_ber = 0
     for d_train, d_valid, d_test in kfold.split_dict(images):
         if reg_type=='softmax':
             classifier = SoftmaxRegression(lr=lr, class_weight=class_weight)
         elif reg_type=='logistic':
             classifier = LogisticRegression(lr=lr)
         result = trainModel(classifier, d_train, d_valid, d_test, epoch=epoch, n_components=n_components, useBatch=useBatch)
-        test_loss += result.test_loss
-        test_accuracy += result.test_accuracy
-        test_ber += result.test_ber
         results.append(result)
-
-    test_accuracy /= N_SPLITS
-    test_loss /= N_SPLITS
-    test_ber /= N_SPLITS
-    print("TEST result: useBatch={}, loss: {}, accuracy: {}, balanced accuracy: {}".format(useBatch, test_loss, test_accuracy, test_ber))
-    return AggregateResult.aggregate(results)
+    
+    ret = AggregateResult.aggregate(results)
+    print("TEST result: loss_avg: {:.4f} ({:.4f}), accuracy: {:.4f}({:.4f}), balanced accuracy: {:.4f}({:.4f})".format(ret.test_loss_avg, ret.test_loss_std, ret.test_accuracy_avg, ret.test_accuracy_std, ret.test_ber_avg, ret.test_ber_std))
+    return ret
 
 
 ############################
@@ -352,7 +354,7 @@ def reportPCA():
     # hyper parameters
     EPOCH = 50
     N_SPLITS = 10
-    LEARNING_RATE = 0.01
+    LEARNING_RATE = 0.1
 
     if len(emotions)<=2:
         n_components = [3, 5, 8, 10]

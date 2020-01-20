@@ -5,6 +5,7 @@ from matplotlib import pyplot as plt
 import matplotlib.ticker as ticker
 from PIL import Image
 from collections import defaultdict
+from sklearn.metrics import balanced_accuracy_score
 
 from PCA import MyPCA
 from SoftmaxRegression import SoftmaxRegression
@@ -28,8 +29,11 @@ class TrainResult(object):
         self.train_accuracies = []
         self.valid_losses = []
         self.valid_accuracies = []
+        self.train_bers = []
+        self.valid_bers = []
         self.test_loss = None
         self.test_accuracy = None
+        self.test_ber = None
         # for confusion matrix
         self.predictions = []
         self.truths = []
@@ -59,6 +63,11 @@ class AggregateResult(object):
         res.train_accuracy_std = np.std(list(map(lambda x:x.train_accuracies, res_list)), axis=0)
         res.valid_accuracy_avg = np.average(list(map(lambda x:x.valid_accuracies, res_list)), axis=0)
         res.valid_accuracy_std = np.std(list(map(lambda x:x.valid_accuracies, res_list)), axis=0)
+        
+        res.train_ber_avg = np.average(list(map(lambda x:x.train_bers, res_list)), axis=0)
+        res.train_ber_std = np.std(list(map(lambda x:x.train_bers, res_list)), axis=0)
+        res.valid_ber_avg = np.average(list(map(lambda x:x.valid_bers, res_list)), axis=0)
+        res.valid_ber_std = np.std(list(map(lambda x:x.valid_bers, res_list)), axis=0)
         
         for x in res_list:
             res.predictions.extend(x.predictions)
@@ -92,6 +101,8 @@ def trainModel(model, d_train, d_valid, d_test, epoch=100, n_components=None, us
     res.valid_losses.append(model._loss(X_valid, y_valid))
     res.train_accuracies.append(sum(model.predict(X_train)==y_train)/len(y_train))
     res.valid_accuracies.append(sum(model.predict(X_valid)==y_valid)/len(y_valid))
+    res.train_bers.append(balanced_accuracy_score(y_train, model.predict(X_train)))
+    res.valid_bers.append(balanced_accuracy_score(y_valid, model.predict(X_valid)))
     for i in range(epoch):
         model.fit_one_epoch(X_train, y_train, useBatch)
         valid_loss = model._loss(X_valid, y_valid)
@@ -102,9 +113,12 @@ def trainModel(model, d_train, d_valid, d_test, epoch=100, n_components=None, us
         res.valid_losses.append(valid_loss)
         res.train_accuracies.append(sum(model.predict(X_train)==y_train)/len(y_train))
         res.valid_accuracies.append(sum(model.predict(X_valid)==y_valid)/len(y_valid))
+        res.train_bers.append(balanced_accuracy_score(y_train, model.predict(X_train)))
+        res.valid_bers.append(balanced_accuracy_score(y_valid, model.predict(X_valid)))
 
     res.test_loss = model._loss(X_test, y_test)
     res.test_accuracy = sum(model.predict(X_test)==y_test)/len(y_test)
+    res.test_ber = balanced_accuracy_score(y_test, model.predict(X_test))
     res.train_accuracies = np.array(res.train_accuracies)
     res.train_losses = np.array(res.train_losses)
     res.valid_accuracies = np.array(res.valid_accuracies)
@@ -222,7 +236,7 @@ def softmaxConfusion():
     fig, ax = plt.subplots() 
     img = ax.matshow(matrix)
     ax.set_xticklabels(labels)        
-    ax.set_yticklabels(labels)      
+    ax.set_yticklabels(labels)    
     ax.title.set_text("Softmax 10-fold Confusion Matrix")
     fig.colorbar(img, ax=ax, orientation='vertical', fraction=.1)    
     plt.show()
@@ -275,6 +289,7 @@ def doRegression(images, reg_type, n_components = 50, epoch=100, lr=0.1, useBatc
     results = []
     test_accuracy = 0
     test_loss = 0
+    test_ber = 0
     for d_train, d_valid, d_test in kfold.split_dict(images):
         if reg_type=='softmax':
             classifier = SoftmaxRegression(lr=lr, class_weight=class_weight)
@@ -283,11 +298,13 @@ def doRegression(images, reg_type, n_components = 50, epoch=100, lr=0.1, useBatc
         result = trainModel(classifier, d_train, d_valid, d_test, epoch=epoch, n_components=n_components, useBatch=useBatch)
         test_loss += result.test_loss
         test_accuracy += result.test_accuracy
+        test_ber += result.test_ber
         results.append(result)
 
     test_accuracy /= N_SPLITS
     test_loss /= N_SPLITS
-    print("useBatch={}, test loss: {}, test accuracy: {}.".format(useBatch, test_loss, test_accuracy))
+    test_ber /= N_SPLITS
+    print("TEST result: useBatch={}, loss: {}, accuracy: {}, balanced accuracy: {}".format(useBatch, test_loss, test_accuracy, test_ber))
     return AggregateResult.aggregate(results)
 
 
@@ -300,7 +317,7 @@ def doRegression(images, reg_type, n_components = 50, epoch=100, lr=0.1, useBatc
 def reportBalancedSoftmax():
     images, cnt = load_data(data_dir)
     # hyper parameters
-    EPOCH = 100
+    EPOCH = 50
     N_COMPONENTS = 50
     N_SPLITS = 10
     LEARNING_RATE = 0.1
@@ -313,13 +330,13 @@ def reportBalancedSoftmax():
     fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)
     fig.suptitle('Softmax Regression Balanced vs Unweighted')
     axs[0].set_title('Cross-Entropy Loss')
-    axs[1].set_title('Accuracy(Percent Correct)')
+    axs[1].set_title('Balanced Accuracy')
     axs[1].set_xlabel('Epoch')
 
-    axs[0].errorbar(xlabels,balanced_result.train_loss_avg,balanced_result.train_loss_std, errorevery=10, label='balanced train loss')
-    axs[0].errorbar(xlabels,reg_result.train_loss_avg,reg_result.train_loss_std, errorevery=10, label='unweighted train loss')
-    axs[1].errorbar(xlabels,balanced_result.train_accuracy_avg,balanced_result.train_accuracy_std, errorevery=10, label='balanced train accuracy')
-    axs[1].errorbar(xlabels,reg_result.train_accuracy_avg,reg_result.train_accuracy_std, errorevery=10, label='unweighted train accuracy')
+    axs[0].errorbar(xlabels,balanced_result.valid_loss_avg,balanced_result.valid_loss_std, errorevery=10, label='balanced model loss')
+    axs[0].errorbar(xlabels,reg_result.valid_loss_avg,reg_result.valid_loss_std, errorevery=10, label='unweighted model loss')
+    axs[1].errorbar(xlabels,balanced_result.valid_ber_avg,balanced_result.valid_ber_std, errorevery=10, label='balanced model B-accuracy')
+    axs[1].errorbar(xlabels,reg_result.valid_ber_avg,reg_result.valid_ber_std, errorevery=10, label='unweighted model B-accuracy')
     axs[0].legend()
     axs[1].legend()
     plt.show()

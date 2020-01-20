@@ -209,7 +209,7 @@ def visualizeWeights():
 def softmaxConfusion():
     EPOCH = 50
     LEARNING_RATE = 0.1
-    res = doRegression(images, 'softmax', EPOCH, LEARNING_RATE, useBatch=True)
+    res = doRegression(images, 'softmax', n_components=50, epoch=EPOCH, lr=LEARNING_RATE, useBatch=True)
     pred = res.predictions
     truth = res.truths
     dic = defaultdict(lambda:len(dic))
@@ -230,8 +230,8 @@ def softmaxConfusion():
 def softmaxSGD():
     EPOCH = 50
     LEARNING_RATE = 0.1
-    gd_res = doRegression(images, 'softmax', n_components=50, EPOCH, LEARNING_RATE, useBatch=True)
-    sgd_res = doRegression(images, 'softmax', n_components=50, EPOCH, LEARNING_RATE, useBatch=False)
+    gd_res = doRegression(images, 'softmax', n_components=50, epoch=EPOCH, lr=LEARNING_RATE, useBatch=True)
+    sgd_res = doRegression(images, 'softmax', n_components=50, epoch=EPOCH, lr=LEARNING_RATE, useBatch=False)
     xlabels = [x for x in range(0,EPOCH+1)]
     fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)
     fig.suptitle('Softmax Regression GD vs SGD')
@@ -250,7 +250,7 @@ def softmaxSGD():
 def reportSoftmax():
     EPOCH = 100
     LEARNING_RATE = 0.5
-    result = doRegression(images, 'softmax', n_components=50, EPOCH, LEARNING_RATE, useBatch=True)
+    result = doRegression(images, 'softmax', n_components=50, epoch=EPOCH, lr=LEARNING_RATE, useBatch=True)
     
     xlabels = [x for x in range(0,EPOCH+1)]
     fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)
@@ -305,9 +305,9 @@ def reportBalancedSoftmax():
     N_SPLITS = 10
     LEARNING_RATE = 0.1
     print("----training balanced model------")
-    balanced_result = doRegression(images, "softmax", n_components=50, EPOCH, LEARNING_RATE, class_weight='balanced')
+    balanced_result = doRegression(images, "softmax", n_components=50,  epoch=EPOCH, lr=LEARNING_RATE, class_weight='balanced')
     print("----training regular model------")
-    reg_result = doRegression(images, 'softmax', n_components=50, EPOCH, LEARNING_RATE)
+    reg_result = doRegression(images, 'softmax', n_components=50,  epoch=EPOCH, lr=LEARNING_RATE)
     
     xlabels = [x for x in range(0,EPOCH+1)]
     fig, axs = plt.subplots(nrows=2, ncols=1, sharex=True)

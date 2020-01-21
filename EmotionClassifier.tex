@@ -40,7 +40,7 @@ University of California, San Diego \\
 \maketitle
 
 \begin{abstract}
-Nowadays, there are many machine learning libraries to help us simplify the process of building a machine learning system like a facial emotion recognition neural network. In this paper, we manage to implement a facial emotion recognition system without using any of these libraries. We start with a logistic regression layer to solve the binary classification problem, then we extend our effort to more general multi-label classifications with the help of the softmax layer. We also use Principal Components Analysis to simplify the calculation. Our models are evaluated on the CK+ dataset using 10-fold cross-validation. Our logistic regressor achieves an average accuracy of $ 100\% $ in Happy vs Angry classification and our softmax regressor achieves an average accuracy of 78\% in 6-way classification. We hope our efforts can clearly explain the composition of a complete machine learning system. 
+Nowadays, there are many machine learning libraries to help us simplify the process of building a machine learning system like a facial emotion recognition neural network. In this paper, we manage to implement a facial emotion recognition system without using any of these libraries. We start with a logistic regression layer to solve the binary classification problem, then we extend our effort to more general multi-label classifications with the help of the softmax layer. We also use Principal Components Analysis to simplify the calculation. Our models are evaluated on the CK+ dataset using 10-fold cross-validation. Our logistic regressor achieves an average accuracy of $ 99\% $ in Happy vs Angry classification and our softmax regressor achieves an average accuracy of $79\%$ in 6-classes classification. We hope our efforts can clearly explain the composition of a complete machine learning system. 
 \end{abstract}
 
 \section{Introduction}
@@ -73,7 +73,8 @@ $$A A^{T} A v_{k}=A \lambda_{k} v_{k}=\lambda_{k} A v_{k}$$
 $$A A^{T} \hat{u}_{k}=\lambda_{k} \hat{u}_{k}$$
 So the eigenvector for $A A^{T}$ is $u_{k}=\frac{\hat{u}_{k}}{\left\|\hat{u}_{k}\right\|}$.\\
 And our method passes the sanity check which proves it to be a reasonable way.
-Result: We choose different numbers of components of the PCA result and test their performance in two-classes and six-classes problems. The result is shown below.
+Result: We choose different numbers of components of the PCA result and test their performance in two-classes and six-classes problems. The result is shown below.\\
+According to the table, we choose the number of components n = 8 for binary classification and n = 50 for six class classification problem.
 \begin{table}[!htbp]
 \centering
 \begin{tabular}{ccc}

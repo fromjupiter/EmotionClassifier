@@ -405,7 +405,6 @@ def reportLogisticOneRun():
     plt.ylabel('Cross-Entropy Loss')
     plt.legend(["train loss","valid loss"])
     plt.show()
-    print('test_accuracy is %f' %result.test_accuracy )
 
 def reportLogistic():
     # hyper parameters

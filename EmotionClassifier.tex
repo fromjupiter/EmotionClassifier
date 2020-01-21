@@ -118,7 +118,7 @@ There are two kinds of gradient descent, batch gradient descent and stochastic g
 With a good learning rate $\alpha$, we can see valid loss going down. We then test Logistic Regression on different datasets shown below.
 \subsection {Evaluation on Happiness vs Anger using the resized dataset}
 Here we perform logistic regression on the happy and angry faces from the resized dataset once. The training loss and validation loss are shown below.
-From Figure3, we can see that with the increase of epoch, the training loss continuously goes down while the validation loss goes down and then up again. And the test accuracy is 0.37500.
+From Figure3, we can see that with the increase of epoch, the training loss continuously goes down while the validation loss goes down and then up again. And the test accuracy is 0.62500.
 \begin{figure}[htb]
 	\centering
 	\includegraphics[scale=0.5]{./graph/resized_tvloss.png}
@@ -138,13 +138,13 @@ Again in this problem, we test the Logistic Regression on aligned dataset.
 	\includegraphics[scale=0.5]{./graph/aligned_tvloss.png}
 	\caption{aligned image train loss \& valid loss vs epoch(happiness and anger)}
 \end{figure}
-As Figure5 shows, this time the validation loss goes down with training loss. And the test accuracy reaches 1.0. Figure 6 shows the first four principal components of the aligned data. This time the principal components become quite meaningful. This is the reason for the outstanding performance.
+As Figure5 shows, this time the validation loss goes down with training loss. And the test accuracy reaches 0.9900(std = 0.03). Figure 6 shows the first four principal components of the aligned data. This time the principal components become quite meaningful. This is the reason for the outstanding performance.
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/pca_aligned.png}
 	\caption{First four principal components of the aligned data}
 \end{figure}
-When we choose learning rate = 0.1 and 50 components, the test accuracy reaches 1.0. That means we successfully classified all the data!\\
+When we choose learning rate = 0.1 and 8 components, the test accuracy reaches 0.9900(std = 0.03).\\
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/diff_lr.png}
@@ -152,7 +152,7 @@ When we choose learning rate = 0.1 and 50 components, the test accuracy reaches 
 \end{figure}
 We use 50 components to test the influence of learning rate on train loss. As Figure 7 shows, when the learning rate is too high, we cannot track the trend smoothly and the test accuracy is the lowest under learning rate 0.1, so 0.1 is a reasonable learning rate for this problem.
 \subsection {Evaluation on Fear vs Surprise using the aligned dataset}
-Figure 8 shows the training loss and valid loss on Fear vs Surprise using the aligned dataset. The valid loss still goes down with train loss. And the accuracy reaches 0.958. Therefore, happiness vs anger is not a special case. The aligned dataset does outstand the resized dataset. This is because aligned data centers the face and throws the useless background information away. So the principal components can more focus on the emotion difference.
+Figure 8 shows the training loss and valid loss on Fear vs Surprise using the aligned dataset. The valid loss still goes down with train loss. And the accuracy reaches 0.8500(std = 0.1700). Therefore, happiness vs anger is not a special case. The aligned dataset does outstand the resized dataset. This is because aligned data centers the face and throws the useless background information away. So the principal components can more focus on the emotion difference.
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/aligned_angerfear.png}
@@ -163,7 +163,7 @@ Figure 8 shows the training loss and valid loss on Fear vs Surprise using the al
 Softmax is the generalization of logistic regression for multiple classes. Given an input $x^n$, softmax regression will output a vector $y^n$, where each element, $y_k^n$ represents the probability that $x^n$ is in class k.
 \subsection {Model Evaluation}
 We performed an 10-fold cross validation on pictures of six emotions to check our model's performance. In each fold, best model parameters is selected so that holdout dataset reaches lowest loss. Then we use the model parameters to record the accuracy on test dataset. Final model performance is the average recorded accuracy of ten folds. \\
-Figure9 shows the training process and Figure10 shows the result in confusion matrix form.
+Figure9 shows the training process and Figure10 shows the result in confusion matrix form. And the accuracy is 0.7889(std = 0.0705).
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/softmax_tvloss_acc.png}
@@ -176,7 +176,7 @@ Figure9 shows the training process and Figure10 shows the result in confusion ma
 \end{figure} 
 \subsection {Batch vs Stochastic Gradient Descent}
 In normal batch gradien descent(GD), weights are updated once per epoch. To increase the converging speed over every epoch, stochastic gradient descent(SGD) is introduced.\\
-The figure below compares the converging speed between GD and SGD. We can see that SGD is much faster in terms of minimizing the loss in fewer epochs. The reason is that in each SGD epoch, model parameters are updated N times(N is the training set size) instead of one time.
+The figure11 below compares the converging speed between GD and SGD. The accuracy for batch gradient descent is 0.8000(std = 0.0689) and the accuracy for stochastic gradient is 0.7667(std = 0.0862).We can see that SGD is much faster in terms of minimizing the loss in fewer epochs. The reason is that in each SGD epoch, model parameters are updated N times(N is the training set size) instead of one time.
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/gd_vs_sgd.png}
@@ -192,14 +192,14 @@ To show that our model has learned meaningful patterns, we can visualize the mod
 \subsection {Class weights to handle imbalanced dataset}
 The above experiments have been performed on a balanced dataset. In order to handle imbalanced dataset, we modify our model by adding class weights. The basic idea is that we want to give a penalty to the major classes and a bonus to the rare classes. Class weights are defined as $c_k = C*N/N_k$ where C is class number, N is sample number and $N_k$ is sample number with class k. \\
 Given this class weight definition, we define weighted cross entropy $E = -\sum_{n}\sum_{k=1}^{C} c_k t_k^n ln y_k^n $ as our loss function. The target of our new model training process is to minimize the weighted cross entropy. \\
-Below figure compares the modified model with the original model using the whole CK+ dataset.
+Below figure compares the modified model with the original model using the whole CK+ dataset.The accuracy for balanced dataset is 0.8787(std = 0.0552) while the accuracy for regular dataset is 0.8737(std = 0.0516).
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/unbalanced.png}
 	\caption{Softmax Regression Balanced vs Unweighted}
 \end{figure}
 \section {CONCLUSION}
-From the discussion above, the power of Logistic Regression and Softmax Regression not only depends on the algorithm itself but also relies on the data and preprocessing.
+From the discussion above, the power of Logistic Regression and Softmax Regression not only depends on the algorithm itself but also relies on the data and preprocessing.\\
 A nice dataset is always helpful. To solve the problem of an unbalanced dataset, we should choose some amount of data from each class or add weight to data. To avoid calculating high dimension data, we can use PCA and the Turk \& Pentland's trick. An ideal image in the dataset should get rid of the background and focus on the region of consideration.\\
 Other tricks are also helpful. For example, K-fold Cross-Validation can help us make full use of the dataset and choose a good model.\\
 For the algorithm itself, we should focus on the learning rate and early stopping problem. A good learning rate can speed up gradient descent as well as track the trend well. For this problem, the learning rate should be about 0.1. In the resized dataset, we can see the valid loss does not go down as train loss due to overfitting. Therefore we should also care about the intermediate process and use early stopping to record the best parameters.

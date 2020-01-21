@@ -153,7 +153,7 @@ When we choose learning rate = 0.1 and 8 components, the test accuracy reaches 0
 \end{figure}
 We test the influence of learning rate on train loss. As Figure 7 shows, when the learning rate is too high, we cannot track the trend smoothly and the test accuracy is the lowest under learning rate 0.1, so 0.1 is a reasonable learning rate for this problem.
 \subsection {Evaluation on Fear vs Surprise using the aligned dataset}
-Figure 8 shows the training loss and valid loss on Fear vs Surprise using the aligned dataset. The valid loss still goes down with train loss. And the accuracy reaches 0.8500(std = 0.1700). We can see the accuracy is lower than Happiness vs anger. This may because the facial expression difference between happiness and anger is bigger than that of fear and surprise, which makes the system hard to detect. 
+Figure 8 shows the training loss and valid loss on Fear vs Surprise using the aligned dataset. The valid loss still goes down with train loss. And the accuracy reaches 0.8500(std = 0.1700). We can see the accuracy is lower than Happiness vs anger. This may because the facial expression difference between happiness and anger is bigger than that of fear and surprise, which makes the system easier to detect. 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/aligned_angerfear.png}

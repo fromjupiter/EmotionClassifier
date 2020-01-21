@@ -151,9 +151,9 @@ When we choose learning rate = 0.1 and 8 components, the test accuracy reaches 0
 	\includegraphics[scale=0.5]{./graph/diff_lr.png}
 	\caption{The influence of three different learning rates on train loss(happiness and anger)}
 \end{figure}
-We use 50 components to test the influence of learning rate on train loss. As Figure 7 shows, when the learning rate is too high, we cannot track the trend smoothly and the test accuracy is the lowest under learning rate 0.1, so 0.1 is a reasonable learning rate for this problem.
+We test the influence of learning rate on train loss. As Figure 7 shows, when the learning rate is too high, we cannot track the trend smoothly and the test accuracy is the lowest under learning rate 0.1, so 0.1 is a reasonable learning rate for this problem.
 \subsection {Evaluation on Fear vs Surprise using the aligned dataset}
-Figure 8 shows the training loss and valid loss on Fear vs Surprise using the aligned dataset. The valid loss still goes down with train loss. And the accuracy reaches 0.8500(std = 0.1700). Therefore, happiness vs anger is not a special case. The aligned dataset does outstand the resized dataset. This is because aligned data centers the face and throws the useless background information away. So the principal components can more focus on the emotion difference.
+Figure 8 shows the training loss and valid loss on Fear vs Surprise using the aligned dataset. The valid loss still goes down with train loss. And the accuracy reaches 0.8500(std = 0.1700). We can see the accuracy is lower than Happiness vs anger. This may because the facial expression difference between happiness and anger is bigger than that of fear and surprise, which makes the system hard to detect. 
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/aligned_angerfear.png}
@@ -184,7 +184,7 @@ The figure11 below compares the converging speed between GD and SGD. The accurac
 	\caption{Softmax 10-fold Confusion Matrix}
 \end{figure}
 \subsection {Weight Visualization}
-To show that our model has learned meaningful patterns, we can visualize the model parameters by doing inner product with our PCA components. Below pictures show the result of visualized weights.
+To show that our model has learned meaningful patterns, we can visualize the model parameters by doing inner product with our PCA components. Figure12 show the result of visualized weights.
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/softmax_weight.png}
@@ -193,7 +193,7 @@ To show that our model has learned meaningful patterns, we can visualize the mod
 \subsection {Class weights to handle imbalanced dataset}
 The above experiments have been performed on a balanced dataset. In order to handle imbalanced dataset, we modify our model by adding class weights. The basic idea is that we want to give a penalty to the major classes and a bonus to the rare classes. Class weights are defined as $c_k = C*N/N_k$ where C is class number, N is sample number and $N_k$ is sample number with class k. \\
 Given this class weight definition, we define weighted cross entropy $E = -\sum_{n}\sum_{k=1}^{C} c_k t_k^n ln y_k^n $ as our loss function. The target of our new model training process is to minimize the weighted cross entropy. \\
-Below figure compares the modified model with the original model using the whole CK+ dataset.The accuracy for balanced dataset is 0.8787(std = 0.0552) while the accuracy for regular dataset is 0.8737(std = 0.0516).
+Figure13 compares the modified model with the original model using the whole CK+ dataset.The accuracy for balanced dataset is 0.8787(std = 0.0552) while the accuracy for regular dataset is 0.8737(std = 0.0516).
 \begin{figure}[h]
 	\centering
 	\includegraphics[scale=0.5]{./graph/unbalanced.png}

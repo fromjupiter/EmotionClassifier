@@ -350,9 +350,9 @@ def reportBalancedSoftmax():
 
 def reportPCA():
     # hyper parameters
-    EPOCH = 50
+    EPOCH = 100
     N_SPLITS = 10
-    LEARNING_RATE = 0.01
+    LEARNING_RATE = 0.1
 
     if len(emotions)<=2:
         n_components = [3, 5, 8, 10]
@@ -384,14 +384,14 @@ def reportPCA():
 def reportLogisticOneRun():
     # hyper parameters
     EPOCH = 50
-    N_COMPONENTS = 30
+    N_COMPONENTS = 8
     N_SPLITS = 10
     LEARNING_RATE = 0.1
     i = 0
     kfold = MyKFold(N_SPLITS)
     for d_train, d_valid, d_test in kfold.split_dict(images):
         i += 1
-        if i != 7: continue
+        if i != 6: continue
         classifier = LogisticRegression(lr=LEARNING_RATE)
         result = trainModel(classifier, d_train, d_valid, d_test, epoch=EPOCH, n_components=N_COMPONENTS, useBatch=True)
     xlabels = [x for x in range(0,EPOCH+1)]
@@ -408,7 +408,7 @@ def reportLogisticOneRun():
 def reportLogistic():
     # hyper parameters
     EPOCH = 50
-    N_COMPONENTS = 20
+    N_COMPONENTS = 8
     N_SPLITS = 10
     LEARNING_RATE = [0.01,0.1,5]
     balanced_results = []
@@ -435,7 +435,7 @@ def reportLogistic():
     plt.errorbar(xlabels,balanced_results[0].train_loss_avg,balanced_results[0].train_loss_std, errorevery=10, label='train loss when lr=0.01')
     plt.errorbar(xlabels,balanced_results[1].train_loss_avg,balanced_results[1].train_loss_std, errorevery=10, label='train loss when lr=0.1')
     plt.errorbar(xlabels,balanced_results[2].train_loss_avg,balanced_results[2].train_loss_std, errorevery=10, label='train loss when lr=5')
-    plt.legend(['lr = 0.001','lr= 0.1','lr = 50'])
+    plt.legend(['lr = 0.001','lr= 0.1','lr = 5'])
     plt.show()
 
 

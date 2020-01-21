@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7250 64-bit) (preloaded format=pdflatex 2020.1.18)  20 JAN 2020 14:12
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7250 64-bit) (preloaded format=pdflatex 2020.1.18)  20 JAN 2020 15:57
 entering extended mode
 **./EmotionClassifier.tex
 (EmotionClassifier.tex
@@ -374,11 +374,11 @@ File: ./graph/pca_aligned.png Graphic file (type png)
 <use ./graph/pca_aligned.png>
 Package pdftex.def Info: ./graph/pca_aligned.png  used on input line 144.
 (pdftex.def)             Requested size: 231.26343pt x 172.72487pt.
-<./graph/diff_lr.png, id=106, 462.528pt x 345.4506pt>
+<./graph/diff_lr.png, id=106, 462.528pt x 344.0052pt>
 File: ./graph/diff_lr.png Graphic file (type png)
 <use ./graph/diff_lr.png>
 Package pdftex.def Info: ./graph/diff_lr.png  used on input line 150.
-(pdftex.def)             Requested size: 231.26343pt x 172.72487pt.
+(pdftex.def)             Requested size: 231.26343pt x 172.00217pt.
  [4 <./graph/resized_tvloss.png> <./graph/pca_resized.png>]
 
 LaTeX Warning: `h' float specifier changed to `ht'.
@@ -392,30 +392,74 @@ Package pdftex.def Info: ./graph/aligned_angerfear.png  used on input line 158.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
-[5 <./graph/aligned_tvloss.png> <./graph/pca_aligned.png>] [6 <./graph/diff_lr.
-png> <./graph/aligned_angerfear.png>] (EmotionClassifier.bbl
+[5 <./graph/aligned_tvloss.png> <./graph/pca_aligned.png>]
+<./graph/softmax_tvloss_acc.png, id=124, 462.528pt x 344.0052pt>
+File: ./graph/softmax_tvloss_acc.png Graphic file (type png)
+<use ./graph/softmax_tvloss_acc.png>
+Package pdftex.def Info: ./graph/softmax_tvloss_acc.png  used on input line 169
+.
+(pdftex.def)             Requested size: 231.26343pt x 172.00217pt.
+<./graph/confusion.png, id=125, 462.528pt x 344.0052pt>
+File: ./graph/confusion.png Graphic file (type png)
+<use ./graph/confusion.png>
+Package pdftex.def Info: ./graph/confusion.png  used on input line 174.
+(pdftex.def)             Requested size: 231.26343pt x 172.00217pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<./graph/gd_vs_sgd.png, id=126, 462.528pt x 344.0052pt>
+File: ./graph/gd_vs_sgd.png Graphic file (type png)
+<use ./graph/gd_vs_sgd.png>
+Package pdftex.def Info: ./graph/gd_vs_sgd.png  used on input line 182.
+(pdftex.def)             Requested size: 231.26343pt x 172.00217pt.
+[6 <./graph/diff_lr.png> <./graph/aligned_angerfear.png>]
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<./graph/softmax_weight.png, id=135, 462.528pt x 344.0052pt>
+File: ./graph/softmax_weight.png Graphic file (type png)
+<use ./graph/softmax_weight.png>
+Package pdftex.def Info: ./graph/softmax_weight.png  used on input line 189.
+(pdftex.def)             Requested size: 231.26343pt x 172.00217pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<./graph/unbalanced.png, id=136, 462.528pt x 344.0052pt>
+File: ./graph/unbalanced.png Graphic file (type png)
+<use ./graph/unbalanced.png>
+Package pdftex.def Info: ./graph/unbalanced.png  used on input line 198.
+(pdftex.def)             Requested size: 231.26343pt x 172.00217pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+[7 <./graph/softmax_tvloss_acc.png> <./graph/confusion.png>] [8 <./graph/gd_vs_
+sgd.png> <./graph/softmax_weight.png>] (EmotionClassifier.bbl
 
 LaTeX Warning: Empty `thebibliography' environment on input line 3.
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 182.
- [7]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 182.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 214.
+ [9 <./graph/unbalanced.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 214.
  (EmotionClassifier.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 182.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 182.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 214.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 214.
 Package rerunfilecheck Info: File `EmotionClassifier.out' has not changed.
-(rerunfilecheck)             Checksum: 58ACEC12BEF8F1CDC0451C33EB72C57A;1203.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 182.
+(rerunfilecheck)             Checksum: 8A5BD1AFABCDF605B23B08DE39139C2B;1209.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 214.
  ) 
 Here is how much of TeX's memory you used:
- 5869 strings out of 492484
- 89731 string characters out of 3121601
+ 5906 strings out of 492484
+ 90562 string characters out of 3121601
  181764 words of memory out of 3000000
- 10080 multiletter control sequences out of 15000+200000
+ 10105 multiletter control sequences out of 15000+200000
  13867 words of font info for 29 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 45i,9n,45p,923b,322s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 45i,9n,45p,931b,322s stack positions out of 5000i,500n,10000p,200000b,50000s
 {C:/Users/maiyu/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r.enc
 }<C:/Users/maiyu/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/
 cm/cmex10.pfb><C:/Users/maiyu/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/pub
@@ -431,9 +475,9 @@ e1/urw/courier/ucrr8a.pfb><C:/Users/maiyu/AppData/Local/Programs/MiKTeX 2.9/fon
 ts/type1/urw/times/utmb8a.pfb><C:/Users/maiyu/AppData/Local/Programs/MiKTeX 2.9
 /fonts/type1/urw/times/utmr8a.pfb><C:/Users/maiyu/AppData/Local/Programs/MiKTeX
  2.9/fonts/type1/urw/times/utmri8a.pfb>
-Output written on EmotionClassifier.pdf (7 pages, 511198 bytes).
+Output written on EmotionClassifier.pdf (9 pages, 803281 bytes).
 PDF statistics:
- 187 PDF objects out of 1000 (max. 8388607)
- 36 named destinations out of 1000 (max. 500000)
- 177 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 214 PDF objects out of 1000 (max. 8388607)
+ 43 named destinations out of 1000 (max. 500000)
+ 202 words of extra memory for PDF output out of 10000 (max. 10000000)
 

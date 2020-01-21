@@ -9,9 +9,9 @@
 \BOOKMARK [2][-]{subsection.4.2}{Evaluation on Happiness vs Anger using the aligned dataset}{section.4}% 9
 \BOOKMARK [2][-]{subsection.4.3}{Evaluation on Fear vs Surprise using the aligned dataset}{section.4}% 10
 \BOOKMARK [1][-]{section.5}{SOFTMAX REGRESSION}{}% 11
-\BOOKMARK [2][-]{subsection.5.1}{Weight Visualization}{section.5}% 12
-\BOOKMARK [2][-]{subsection.5.2}{Evaluation}{section.5}% 13
-\BOOKMARK [2][-]{subsection.5.3}{Batch vs Stochastic Gradient Descent}{section.5}% 14
+\BOOKMARK [2][-]{subsection.5.1}{Model Evaluation}{section.5}% 12
+\BOOKMARK [2][-]{subsection.5.2}{Batch vs Stochastic Gradient Descent}{section.5}% 13
+\BOOKMARK [2][-]{subsection.5.3}{Weight Visualization}{section.5}% 14
 \BOOKMARK [2][-]{subsection.5.4}{Class weights to handle imbalanced dataset}{section.5}% 15
 \BOOKMARK [1][-]{section.6}{CONCLUSION}{}% 16
 \BOOKMARK [1][-]{section.7}{INDIVIDUAL CONTRIBUTIONS}{}% 17
